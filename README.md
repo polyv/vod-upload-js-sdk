@@ -1,4 +1,4 @@
-# POLYV视频上传 SDK
+# POLYV 视频上传 SDK
 Polyv JavaScript 上传 SDK 为您提供上传媒体文件到[保利威云点播平台](http://www.polyv.net/vod/)的开发工具包。
 
 
