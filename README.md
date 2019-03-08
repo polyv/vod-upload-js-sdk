@@ -132,7 +132,7 @@ var uploadManager = videoUpload.addFile(
 
 
 ## API 文档
-见源代码中的 docs 文件夹或 [点击此处打开](https://polyv.github.io/vod-upload-js-sdk/api/1.x/)。
+见源代码中的 docs 文件夹或 [点击此处打开](https://polyv.github.io/vod-upload-js-sdk/api/1.x/index.html)。
 
 
 ## 示例代码
