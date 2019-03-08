@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>视频上传 SDK 功能演示页</title>
+<style>
+  body {
+    margin: 0;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  th {
+    border-bottom: 2px solid #ddd;
+  }
+
+  .progress-wrap {
+    width: 200px;
+    height: 20px;
+    border: 1px solid;
+    float: left;
+    margin-right: 10px;
+  }
+
+  .progress {
+    display: inline-block;
+    text-align: center;
+    height: 100%;
+    background-color: orange;
+    transition: width .6s ease;
+  }
+</style>
+</head>
+
+<body>
+  <div>
+    <label for="title">文件名称：</label>
+    <input type="text" id="title" name="title">
+
+    <label for="uploaderid">id：</label>
+    <input type="text" name="uploaderid" id="uploaderid">
+
+    <button id="update">修改信息</button>
+  </div>
+  <div>
+    <input type="file" id="select" multiple>
+    <input type="button" value="全部开始" id="start">
+    <input type="button" value="全部暂停" id="pause">
+    <input type="button" value="全部删除" id="clear">
+    <span id="progress"></span>
+  </div>
+
+  <hr>
+
+  <table>
+    <thead>
+      <tr>
+        <th width="30%">Filename</th>
+        <th width="10%">id</th>
+        <th width="10%">size</th>
+        <th width="50%">Detail</th>
+      </tr>
+    </thead>
+    <tbody id="uploadList"></tbody>
+  </table>
+
+  <script src="../dist/vod-upload-js-sdk.min.js"></script>
+  <script
+    src="http://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"
+  ></script>
+  <script src="./index.js"></script>
+</body>
+</html>
