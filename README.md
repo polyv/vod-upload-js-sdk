@@ -80,12 +80,11 @@ videoUpload.updateUserData({
 
 ```php
 /* 
-userid、secretkey、writeToken、readToken 都可以在「云点播管理后台 -> 设置 -> API接口」页面中找到。
-*/
+ * userid、secretkey、writeToken 都可以在「云点播管理后台 -> 设置 -> API接口」页面中找到。
+ */
 $userid = "your userid";
 $secretkey = "your sercrety";
 $writeToken = "your writeToken";
-$readToken = "your readToken";
 
 $ptime = time() * 1000;
 $sign = md5($secretkey . $ptime);
