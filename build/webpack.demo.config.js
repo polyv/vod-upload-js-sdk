@@ -6,6 +6,7 @@ const config = require('./webpack.config.js');
 module.exports = merge(config, {
   mode: 'none',
   entry: {
+    polyfill: 'babel-polyfill',
     main: './demo/dev.js'
   },
   output: {
