@@ -5,10 +5,7 @@ const config = require('./webpack.config.js');
 module.exports = merge(config, {
   devtool: 'inline-source-map',
   mode: 'development',
-  entry: {
-    polyfill: 'babel-polyfill',
-    main: './demo/dev.js'
-  },
+  entry: './demo/dev.js',
   plugins: [
     new HtmlWebpackPlugin({
       template: './demo/dev.html',
