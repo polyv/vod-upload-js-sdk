@@ -6,6 +6,7 @@ module.exports = merge(config, {
   devtool: 'inline-source-map',
   mode: 'development',
   entry: {
+    polyfill: 'babel-polyfill',
     main: './demo/dev.js'
   },
   plugins: [
