@@ -1,6 +1,6 @@
 import PlvVideoUpload from '../src/index';
 const $ = window.jQuery;
-const getPolyvAuthorization = ''; // 需要自行提供一个获取账号授权信息的接口
+const getPolyvAuthorization = ''; // TODO 需要自行提供一个获取账号授权信息的接口
 
 function fileDom(uploader) {
   return `<tr data-id="${uploader.id}">
@@ -115,7 +115,8 @@ $('#select').on('change', (e) => {
       tag: 'demo中设置的标签',
       luping: 0,
       keepsource: 0,
-      title: ''
+      title: '',
+      state: 'test'
     };
 
     // 添加文件到上传列表
