@@ -11,7 +11,7 @@
   ],
   "main": "dist/main.js",
   "scripts": {
-    "dev": "npx cross-env NODE_ENV=development webpack-dev-server --config build/webpack.dev.config.js",
+    "dev": "npx cross-env NODE_ENV=development webpack-dev-server --config build/webpack.dev.config.js --open",
     "build": "npx cross-env NODE_ENV=production webpack --config build/webpack.prod.config.js",
     "build-umd": "npx cross-env NODE_ENV=production webpack --config build/webpack.umd.config.js",
     "build-demo": "npx cross-env NODE_ENV=production webpack --config build/webpack.demo.config.js",

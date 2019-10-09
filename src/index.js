@@ -162,7 +162,7 @@ class PlvVideoUpload extends PubSub {
     if (this.status === STATUS.NOT_STARTED) {
       this.waitQueue.enqueue(uploader);
     } else {
-      this.uploadPool.enqueue(uploader);
+      this.newUploadPromiseList.push(this.uploadPool.enqueue(uploader));
     }
     /** @type {UploadManager} */
     return uploader;
