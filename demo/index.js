@@ -1,6 +1,6 @@
 const PlvVideoUpload = window.PlvVideoUpload;
 const $ = window.jQuery;
-const getPolyvAuthorization = ''; // 需要自行提供一个获取账号授权信息的接口
+const getPolyvAuthorization = ''; // TODO 需要自行提供一个获取账号授权信息的接口
 
 function fileDom(uploader) {
   return `<tr data-id="${uploader.id}">

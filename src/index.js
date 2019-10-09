@@ -127,6 +127,7 @@ class PlvVideoUpload extends PubSub {
    * @param {Number} fileSetting.luping=0 开启视频课件优化处理，对于上传录屏类视频清晰度有所优化：0为不开启，1为开启
    * @param {Number} fileSetting.keepsource=0 源文件播放（不对源文件进行编码）：0为编码，1为不编码
    * @param {String} fileSetting.title=file.name 文件名称
+   * @param {} fileSetting.state 自定义信息，会在上传完成的回调中返回
    * @return {UploadManager}
    */
   addFile(file, events = {}, fileSetting = {}) {
@@ -357,6 +358,7 @@ class PlvVideoUpload extends PubSub {
  * @property {Number} size - 文件大小，单位Bytes（只读）
  * @property {Number} filesize - 文件大小，单位Bytes（只读）
  * @property {String} vid - vid（只读）
+ * @property {} state - 自定义信息，会在上传完成的回调中返回
  */
 
 /**

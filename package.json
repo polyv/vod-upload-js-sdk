@@ -1,6 +1,6 @@
 {
   "name": "@polyv/vod-upload-js-sdk",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Polyv JavaScript Upload SDK provides you with a development kit for uploading media files to Polyv Video Cloud platform.",
   "keywords": [
     "polyv",
@@ -32,7 +32,7 @@
     "@babel/plugin-proposal-json-strings": "^7.2.0",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-syntax-import-meta": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.2.0",
     "@babel/runtime-corejs2": "^7.2.0",
     "ali-oss": "^6.1.0",
@@ -61,6 +61,6 @@
     "webpack-merge": "^4.1.5"
   },
   "dependencies": {
-    "@babel/runtime": "^7.4.5"
+    "@babel/runtime": "^7.6.3"
   }
 }
