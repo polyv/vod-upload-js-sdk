@@ -73,7 +73,7 @@ class UploadManager extends PubSub {
 
       // 上传失败
       if (res.code !== 200) {
-        this._emitFileFailed();
+        this._emitFileFailed(res);
         return Promise.resolve({
           data: {
             uploader: this,
@@ -120,9 +120,9 @@ class UploadManager extends PubSub {
       };
 
       return this._multipartUpload();
-    }).catch(() => {
+    }).catch((err) => {
       // 上传失败
-      this._emitFileFailed();
+      this._emitFileFailed(err);
       return Promise.resolve({
         data: {
           uploader: this,
@@ -192,7 +192,11 @@ class UploadManager extends PubSub {
 
     // Multipart Upload ID 不存在
     if (err.status == 404 && err.name == 'NoSuchUploadError') {
-      this._emitFileFailed();
+      if (this.retryCount > 0) {
+        clearLocalFileInfo(this.fileData.id);
+        return this._retry(resolve);
+      }
+      this._emitFileFailed(err);
       return resolve({
         data: {
           uploader: this,
@@ -213,7 +217,7 @@ class UploadManager extends PubSub {
     }
 
     // 上传失败
-    this._emitFileFailed();
+    this._emitFileFailed(err);
     return resolve({
       data: {
         uploader: this,
@@ -242,7 +246,7 @@ class UploadManager extends PubSub {
       .then(res => {
         // 请求失败
         if ('success' !== res.status) {
-          this._emitFileFailed();
+          this._emitFileFailed(res);
           return resolve({
             data: {
               uploader: this,
@@ -263,16 +267,19 @@ class UploadManager extends PubSub {
         });
       })
       .catch((err) => {
+        this._emitFileFailed(err);
         return reject(err);
       });
   }
 
-  _emitFileFailed() {
+  _emitFileFailed(errData) {
     /**
      * @fires UploadManager#FileFailed
      */
     this.trigger('FileFailed', {
-      uploaderid: this.id
+      uploaderid: this.id,
+      errData,
+      fileData: this.fileData
     });
   }
 
@@ -310,7 +317,8 @@ class UploadManager extends PubSub {
      */
     this.trigger('FileProgress', {
       uploaderid: this.id,
-      progress
+      progress,
+      fileData: this.fileData
     });
     // 保存checkpoint信息到localStorage
     setLocalFileInfo(this.fileData.id, checkpoint);
