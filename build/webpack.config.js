@@ -20,6 +20,7 @@ module.exports = {
               }]
             ],
             plugins: [
+              '@babel/plugin-transform-runtime',
               // Stage 3
               '@babel/plugin-syntax-dynamic-import',
               '@babel/plugin-syntax-import-meta',
