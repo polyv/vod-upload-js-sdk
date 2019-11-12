@@ -156,3 +156,6 @@ var uploadManager = videoUpload.addFile(
 ### v1.0.0
 ### v1.1.0
 - 增加对自定义信息字段的支持
+### v1.1.1
+- 优化文件上传失败时的重试逻辑
+- 文件上传失败时返回的错误信息中增加 errData 属性
