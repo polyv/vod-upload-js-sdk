@@ -235,7 +235,7 @@ class UploadManager extends PubSub {
       code: 107,
       message: '上传错误，正在重试',
       data: {
-        promise: this._multipartUpload()
+        uploader: this
       }
     });
   }

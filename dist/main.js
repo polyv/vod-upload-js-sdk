@@ -495,7 +495,7 @@ function (_PubSub) {
       case 107:
         {
           // 上传错误，正在重试
-          this.newUploadPromiseList.push(data.promise);
+          this.newUploadPromiseList.push(this.uploadPool.enqueue(data.uploader));
 
           if (this.status === STATUS.NOT_STARTED) {
             this._onPromiseEnd();
@@ -1843,7 +1843,7 @@ function (_PubSub) {
       code: 107,
       message: '上传错误，正在重试',
       data: {
-        promise: this._multipartUpload()
+        uploader: this
       }
     });
   } // 更新上传token

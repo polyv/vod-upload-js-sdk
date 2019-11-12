@@ -318,7 +318,7 @@ class PlvVideoUpload extends PubSub {
       }
       case 106: // token过期，正在重试
       case 107: { // 上传错误，正在重试
-        this.newUploadPromiseList.push(data.promise);
+        this.newUploadPromiseList.push(this.uploadPool.enqueue(data.uploader));
         if (this.status === STATUS.NOT_STARTED) {
           this._onPromiseEnd();
         }
