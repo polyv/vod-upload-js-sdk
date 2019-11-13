@@ -1,6 +1,6 @@
 import PlvVideoUpload from '../src/index';
 const $ = window.jQuery;
-const getPolyvAuthorization = ''; // 需要自行提供一个获取账号授权信息的接口
+const getPolyvAuthorization = ''; // TODO 需要自行提供一个获取账号授权信息的接口
 
 function fileDom(uploader) {
   return `<tr data-id="${uploader.id}">
@@ -58,7 +58,7 @@ autoUpdateUserData(null, videoUpload);
 function onUploadComplete() {
   $('#progress').text('上传结束！');
   // 获取上传文件列表
-  console.info(videoUpload.files);
+  console.info('上传结束：', videoUpload.files);
 }
 
 function onError(err) {
@@ -95,7 +95,7 @@ function onFileFailed({ uploaderid }) {
 }
 
 function onFileStopped({ uploaderid }) {
-  console.info('暂停上传' + uploaderid);
+  console.info('暂停上传 ' + uploaderid);
   console.info(videoUpload);
 }
 
@@ -115,7 +115,8 @@ $('#select').on('change', (e) => {
       tag: 'demo中设置的标签',
       luping: 0,
       keepsource: 0,
-      title: ''
+      title: '',
+      state: 'test'
     };
 
     // 添加文件到上传列表

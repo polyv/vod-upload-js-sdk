@@ -1,5 +1,6 @@
 const merge = require('webpack-merge');
 const prodConfig = require('./webpack.prod.config.js');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = merge(prodConfig, {
   mode: 'production',
@@ -10,5 +11,8 @@ module.exports = merge(prodConfig, {
     library: 'PlvVideoUpload',
     libraryTarget: 'umd',
     libraryExport: 'default'
-  }
+  },
+  // plugins: [
+  //   new BundleAnalyzerPlugin()
+  // ]
 });

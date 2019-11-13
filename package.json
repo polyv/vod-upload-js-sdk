@@ -1,6 +1,6 @@
 {
   "name": "@polyv/vod-upload-js-sdk",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Polyv JavaScript Upload SDK provides you with a development kit for uploading media files to Polyv Video Cloud platform.",
   "keywords": [
     "polyv",
@@ -11,7 +11,7 @@
   ],
   "main": "dist/main.js",
   "scripts": {
-    "dev": "npx cross-env NODE_ENV=development webpack-dev-server --config build/webpack.dev.config.js",
+    "dev": "npx cross-env NODE_ENV=development webpack-dev-server --config build/webpack.dev.config.js --open",
     "build": "npx cross-env NODE_ENV=production webpack --config build/webpack.prod.config.js",
     "build-umd": "npx cross-env NODE_ENV=production webpack --config build/webpack.umd.config.js",
     "build-demo": "npx cross-env NODE_ENV=production webpack --config build/webpack.demo.config.js",
@@ -32,6 +32,7 @@
     "@babel/plugin-proposal-json-strings": "^7.2.0",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-syntax-import-meta": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.2.0",
     "@babel/runtime-corejs2": "^7.2.0",
     "ali-oss": "^6.1.0",
@@ -56,8 +57,12 @@
     "stylelint-config-recommended": "^2.1.0",
     "stylelint-webpack-plugin": "^0.10.5",
     "webpack": "^4.27.1",
+    "webpack-bundle-analyzer": "^3.6.0",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10",
     "webpack-merge": "^4.1.5"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.6.3"
   }
 }
