@@ -58,7 +58,7 @@ autoUpdateUserData(null, videoUpload);
 function onUploadComplete() {
   $('#progress').text('上传结束！');
   // 获取上传文件列表
-  console.info(videoUpload.files);
+  console.info('上传结束：', videoUpload.files);
 }
 
 function onError(err) {
@@ -95,7 +95,7 @@ function onFileFailed({ uploaderid }) {
 }
 
 function onFileStopped({ uploaderid }) {
-  console.info('暂停上传' + uploaderid);
+  console.info('暂停上传 ' + uploaderid);
   console.info(videoUpload);
 }
 

@@ -318,7 +318,7 @@ class PlvVideoUpload extends PubSub {
       }
       case 106: // token过期，正在重试
       case 107: { // 上传错误，正在重试
-        this.newUploadPromiseList.push(data.promise);
+        this.newUploadPromiseList.push(this.uploadPool.enqueue(data.uploader));
         if (this.status === STATUS.NOT_STARTED) {
           this._onPromiseEnd();
         }
@@ -410,6 +410,7 @@ class PlvVideoUpload extends PubSub {
  * @event PlvVideoUpload#FileProgress
  * @type {Object}
  * @property {String} uploaderid 触发事件的UploadManager的id
+ * @property {FileData} fileData 文件信息
  * @property {Number} progress 上传进度，范围为0~1
  */
 
@@ -425,6 +426,8 @@ class PlvVideoUpload extends PubSub {
  * 文件上传失败时触发。
  * @event PlvVideoUpload#FileFailed
  * @property {String} uploaderid 触发事件的UploadManager的id
+ * @property {FileData} fileData 文件信息
+ * @property {Error|Object} errData 报错信息
  */
 
 export default PlvVideoUpload;

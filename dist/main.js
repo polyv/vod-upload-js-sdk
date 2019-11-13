@@ -495,7 +495,7 @@ function (_PubSub) {
       case 107:
         {
           // 上传错误，正在重试
-          this.newUploadPromiseList.push(data.promise);
+          this.newUploadPromiseList.push(this.uploadPool.enqueue(data.uploader));
 
           if (this.status === STATUS.NOT_STARTED) {
             this._onPromiseEnd();
@@ -594,6 +594,7 @@ function (_PubSub) {
  * @event PlvVideoUpload#FileProgress
  * @type {Object}
  * @property {String} uploaderid 触发事件的UploadManager的id
+ * @property {FileData} fileData 文件信息
  * @property {Number} progress 上传进度，范围为0~1
  */
 
@@ -609,6 +610,8 @@ function (_PubSub) {
  * 文件上传失败时触发。
  * @event PlvVideoUpload#FileFailed
  * @property {String} uploaderid 触发事件的UploadManager的id
+ * @property {FileData} fileData 文件信息
+ * @property {Error|Object} errData 报错信息
  */
 
 
@@ -1675,7 +1678,7 @@ function (_PubSub) {
       var data = res.data; // 上传失败
 
       if (res.code !== 200) {
-        _this2._emitFileFailed();
+        _this2._emitFileFailed(res);
 
         return _promise.default.resolve({
           data: {
@@ -1721,9 +1724,9 @@ function (_PubSub) {
         host: callback.callbackHost
       };
       return _this2._multipartUpload();
-    }).catch(function () {
+    }).catch(function (err) {
       // 上传失败
-      _this2._emitFileFailed();
+      _this2._emitFileFailed(err);
 
       return _promise.default.resolve({
         data: {
@@ -1794,7 +1797,12 @@ function (_PubSub) {
 
 
     if (err.status == 404 && err.name == 'NoSuchUploadError') {
-      this._emitFileFailed();
+      if (this.retryCount > 0) {
+        (0, _utils.clearLocalFileInfo)(this.fileData.id);
+        return this._retry(resolve);
+      }
+
+      this._emitFileFailed(err);
 
       return resolve({
         data: {
@@ -1816,7 +1824,7 @@ function (_PubSub) {
     } // 上传失败
 
 
-    this._emitFileFailed();
+    this._emitFileFailed(err);
 
     return resolve({
       data: {
@@ -1835,7 +1843,7 @@ function (_PubSub) {
       code: 107,
       message: '上传错误，正在重试',
       data: {
-        promise: this._multipartUpload()
+        uploader: this
       }
     });
   } // 更新上传token
@@ -1847,7 +1855,7 @@ function (_PubSub) {
     (0, _utils.getToken)(this.userData).then(function (res) {
       // 请求失败
       if ('success' !== res.status) {
-        _this4._emitFileFailed();
+        _this4._emitFileFailed(res);
 
         return resolve({
           data: {
@@ -1868,16 +1876,20 @@ function (_PubSub) {
         }
       });
     }).catch(function (err) {
+      _this4._emitFileFailed(err);
+
       return reject(err);
     });
   };
 
-  _proto._emitFileFailed = function _emitFileFailed() {
+  _proto._emitFileFailed = function _emitFileFailed(errData) {
     /**
      * @fires UploadManager#FileFailed
      */
     this.trigger('FileFailed', {
-      uploaderid: this.id
+      uploaderid: this.id,
+      errData: errData,
+      fileData: this.fileData
     });
   } // 停止文件上传
   ;
@@ -1931,7 +1943,8 @@ function (_PubSub) {
 
               this.trigger('FileProgress', {
                 uploaderid: this.id,
-                progress: progress
+                progress: progress,
+                fileData: this.fileData
               }); // 保存checkpoint信息到localStorage
 
               (0, _utils.setLocalFileInfo)(this.fileData.id, checkpoint);

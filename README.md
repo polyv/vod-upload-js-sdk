@@ -25,7 +25,7 @@ Polyv JavaScript 上传 SDK 为您提供上传媒体文件到[保利威云点播
 #### 方法一：引入在线资源
 ```html
 <!-- 指定版本 -->
-<script src="//player.polyv.net/resp/vod-upload-js-sdk/1.1.0/vod-upload-js-sdk.min.js"></script>
+<script src="//player.polyv.net/resp/vod-upload-js-sdk/1.1.1/vod-upload-js-sdk.min.js"></script>
 <!-- 最新版本 -->
 <script src="//player.polyv.net/resp/vod-upload-js-sdk/latest/vod-upload-js-sdk.min.js"></script>
 ```
@@ -156,3 +156,6 @@ var uploadManager = videoUpload.addFile(
 ### v1.0.0
 ### v1.1.0
 - 增加对自定义信息字段的支持
+### v1.1.1
+- 优化文件上传失败时的重试逻辑
+- 文件上传失败时返回的错误信息中增加 errData 属性
