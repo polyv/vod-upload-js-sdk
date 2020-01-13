@@ -17565,7 +17565,7 @@ var DEFAULT_ACCEPTED_MIME_TYPE = 'video/avi,.avi,.f4v,video/mpeg,.mpg,video/mp4,
 
 function _isContainFileMimeType(file, acceptedMimeType) {
   var acceptedList = acceptedMimeType.split(',');
-  return acceptedList.indexOf(file.type) > -1 || acceptedList.indexOf(file.name.replace(/.+(\..+)$/, '$1')) > -1;
+  return acceptedList.indexOf(file.type) > -1 || acceptedList.indexOf(file.name.replace(/.+(\..+)$/, '$1').toLowerCase()) > -1;
 }
 /**
  * 上传文件的文件类型是否在允许范围内

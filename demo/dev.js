@@ -1,6 +1,6 @@
 import PlvVideoUpload from '../src/index';
 const $ = window.jQuery;
-const getPolyvAuthorization = ''; // TODO 需要自行提供一个获取账号授权信息的接口
+const getPolyvAuthorization = '/getToken';
 
 function fileDom(uploader) {
   return `<tr data-id="${uploader.id}">
@@ -19,9 +19,7 @@ function fileDom(uploader) {
 function getUserData(videoUpload) {
   $.ajax({
     url: getPolyvAuthorization
-  }).done(res => {
-    const data = JSON.parse(res);
-
+  }).done(data => {
     videoUpload.updateUserData({
       userid: data.userid,
       ptime: data.ts,

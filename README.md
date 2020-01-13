@@ -25,7 +25,7 @@ Polyv JavaScript 上传 SDK 为您提供上传媒体文件到[保利威云点播
 #### 方法一：引入在线资源
 ```html
 <!-- 指定版本 -->
-<script src="//player.polyv.net/resp/vod-upload-js-sdk/1.1.1/vod-upload-js-sdk.min.js"></script>
+<script src="//player.polyv.net/resp/vod-upload-js-sdk/1.1.2/vod-upload-js-sdk.min.js"></script>
 <!-- 最新版本 -->
 <script src="//player.polyv.net/resp/vod-upload-js-sdk/latest/vod-upload-js-sdk.min.js"></script>
 ```
@@ -137,10 +137,8 @@ var uploadManager = videoUpload.addFile(
 ## 示例代码
 源代码中的 demo 文件夹包含两个示例：
 
-- dev.html & dev.js：以模块化方式引入 SDK 的示例。在本项目根目录下运行 `npm run dev` ，打开浏览器访问 `http://127.0.0.1:14002/index.html` 即可。
-- index.html & index.js：以 script 标签引入 SDK 的示例。
-
-此外，还要修改 JS 文件中的 getPolyvAuthorization 变量为有效的请求地址，才能正常使用。
+- dev.html & dev.js：以模块化方式引入 SDK 的示例。需要修改 build 文件夹下的 getToken.js 文件中的账号信息，然后在本项目根目录下运行 `npm run dev` ，打开浏览器访问 `http://127.0.0.1:14002/index.html` 即可。
+- index.html & index.js：以 script 标签引入 SDK 的示例。需要修改 JS 文件中的 getPolyvAuthorization 变量为有效的请求地址，才能正常使用。
 
 
 ## 错误代码
@@ -159,3 +157,6 @@ var uploadManager = videoUpload.addFile(
 ### v1.1.1
 - 优化文件上传失败时的重试逻辑
 - 文件上传失败时返回的错误信息中增加 errData 属性
+### v1.1.2
+- 增加支持文件名后缀大写的文件上传，如 file_example.MP3
+- 修改示例代码
