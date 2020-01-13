@@ -187,7 +187,7 @@ export function generateOssConfig(data) {
 const DEFAULT_ACCEPTED_MIME_TYPE = 'video/avi,.avi,.f4v,video/mpeg,.mpg,video/mp4,.mp4,video/x-flv,.flv,video/x-ms-wmv,.wmv,video/quicktime,.mov,video/3gpp,.3gp,.rmvb,video/x-matroska,.mkv,.asf,.264,.ts,.mts,.dat,.vob,audio/mpeg,.mp3,audio/x-wav,.wav,video/x-m4v,.m4v,video/webm,.webm,.mod';
 function _isContainFileMimeType(file, acceptedMimeType) {
   const acceptedList = acceptedMimeType.split(',');
-  return acceptedList.indexOf(file.type) > -1 || acceptedList.indexOf(file.name.replace(/.+(\..+)$/, '$1')) > -1;
+  return acceptedList.indexOf(file.type) > -1 || acceptedList.indexOf(file.name.replace(/.+(\..+)$/, '$1').toLowerCase()) > -1;
 }
 
 /**
