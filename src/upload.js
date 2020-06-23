@@ -79,7 +79,7 @@ class UploadManager extends PubSub {
             uploader: this,
           },
           code: 101,
-          message: NET_ERR
+          message: res.message
         });
       }
 
