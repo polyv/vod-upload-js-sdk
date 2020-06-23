@@ -1685,7 +1685,7 @@ function (_PubSub) {
             uploader: _this2
           },
           code: 101,
-          message: NET_ERR
+          message: res.message
         });
       } // 用户剩余空间不足
 
