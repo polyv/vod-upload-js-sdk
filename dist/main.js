@@ -547,11 +547,14 @@ function (_PubSub) {
 
 /**
  * @typedef {Object} UserData
- * @property {String} userid - userid
- * @property {Number} ptime - 13位的毫秒级时间戳
- * @property {String} sign - 是根据将secretkey和ptime按照顺序拼凑起来的字符串进行MD5计算得到的值
- * @property {String} hash - 是根据将ptime和writeToken按照顺序拼凑起来的字符串进行MD5计算得到的值
- * @description 这里的ptime、hash、sign有一定的时间期限，需要使用{@link PlvVideoUpload#updateUserData}方法每隔3分钟更新一次参数
+ * @property {String} userid - [主账号]userid。需要在点播后台中获取。
+ * @property {Number} ptime - [主账号]13位的毫秒级时间戳
+ * @property {String} sign - [主账号]校验值其一，计算方式：md5(`${secretkey}${ptime}`)。secretkey需要在点播后台中获取。
+ * @property {String} hash - [主账号]校验值其二，计算方式：md5(`${ptime}${writeToken}`)。writeToken需要在点播后台中获取。
+ * @property {String} appId - [子账号]appId。需要在点播后台中获取。
+ * @property {Number} timestamp - [子账号]13位的毫秒级时间戳
+ * @property {String} sign - [子账号]校验值，计算方式：md5(`${secretkey}appId${appId}timestamp${timestamp}${secretkey}`).toUpperCase()。secretkey和appId需要在点播后台中获取。
+ * @description 主账号/子账号的用户信息及校验值。这里的校验值有一定的时间期限，需要使用{@link PlvVideoUpload#updateUserData}方法每隔3分钟更新一次所有参数。
  */
 
 /**
@@ -17375,6 +17378,32 @@ function getPartSize(fileSize) {
 
 
 function initUpload(userData, fileData) {
+  if (userData.appId) {
+    var _data = {
+      appId: userData.appId,
+      timestamp: userData.timestamp,
+      sign: userData.sign,
+      title: fileData.title,
+      description: fileData.desc,
+      cateId: fileData.cataid,
+      tag: fileData.tag,
+      luping: fileData.luping,
+      filename: fileData.filename,
+      size: fileData.filesize,
+      // fileId: '',
+      keepSource: fileData.keepsource,
+      // vid: '',
+      autoid: 1,
+      isSts: 'Y',
+      uploadType: 'js_sdk_chunk_v1'
+    };
+    var _url = '//api.polyv.net/inner/v3/upload/video/create-upload-task';
+    return _ajax.default.send(_url, {
+      method: 'POST',
+      data: _data
+    });
+  }
+
   var data = {
     ptime: userData.ptime,
     sign: userData.sign,
@@ -17406,6 +17435,20 @@ function initUpload(userData, fileData) {
 
 
 function getToken(userData) {
+  if (userData.appId) {
+    var _data2 = {
+      appId: userData.appId,
+      timestamp: userData.timestamp,
+      sign: userData.sign,
+      isSts: 'Y'
+    };
+    var _url2 = '//api.polyv.net/inner/v3/upload/video/create-upload-token';
+    return _ajax.default.send(_url2, {
+      method: 'GET',
+      data: _data2
+    });
+  }
+
   var data = {
     ptime: userData.ptime,
     sign: userData.sign,
@@ -17491,7 +17534,8 @@ function generateFileData(file, fileSetting, userData) {
     tag: '',
     luping: 0,
     keepsource: 0,
-    title: file.name.replace(/\.\w+$/, '')
+    title: file.name.replace(/\.\w+$/, ''),
+    filename: file.name
   };
 
   for (var key in fileSetting) {
