@@ -1,12 +1,31 @@
 const PlvVideoUpload = window.PlvVideoUpload;
 const $ = window.jQuery;
+const isSubAccount = false; // 测试子账号
 const getPolyvAuthorization = ''; // TODO 需要自行提供一个获取账号授权信息的接口
+
+function transformSize(bytes) {
+  const bt = parseInt(bytes);
+  let result;
+  if (bt === 0) {
+    result = '0B';
+  } else {
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bt) / Math.log(k));
+    if (typeof i !== 'number') {
+      result = '-';
+    } else {
+      result = (bt / Math.pow(k, i)).toFixed(2) + sizes[i];
+    }
+  }
+  return result;
+}
 
 function fileDom(uploader) {
   return `<tr data-id="${uploader.id}">
     <td>${uploader.fileData.title}</td>
     <td>${uploader.id}</td>
-    <td>${uploader.fileData.size}</td>
+    <td>${transformSize(uploader.fileData.size)}</td>
     <td>
       <div class="progress-wrap"><div class="progress"></div></div>
       <input type="button" value="开始" class="js-fileStart" />
@@ -22,12 +41,17 @@ function getUserData(videoUpload) {
   }).done(res => {
     const data = JSON.parse(res);
 
-    videoUpload.updateUserData({
+    const userData = isSubAccount ? {
+      appId: data.appId,
+      timestamp: data.timestamp,
+      sign: data.sign,
+    } : {
       userid: data.userid,
-      ptime: data.ts,
+      ptime: data.timestamp,
       sign: data.sign,
       hash: data.hash
-    });
+    };
+    videoUpload.updateUserData(userData);
   });
 }
 
@@ -46,6 +70,7 @@ function autoUpdateUserData(timer, videoUpload) {
 const $uploadList = $('#uploadList');
 const videoUpload = new PlvVideoUpload({
   parallelFileLimit: 5,
+  // parallel: 5,
   events: {
     UploadComplete: onUploadComplete,
     Error: onError
