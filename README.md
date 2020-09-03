@@ -137,7 +137,7 @@ var uploadManager = videoUpload.addFile(
 ## 示例代码
 源代码中的 demo 文件夹包含两个示例：
 
-- dev.html & dev.js：以模块化方式引入 SDK 的示例。需要修改 build 文件夹下的 getToken.js 文件中的账号信息，然后在本项目根目录下运行 `npm run dev` ，打开浏览器访问 `http://127.0.0.1:14002/index.html` 即可。
+- dev.html & dev.js：以模块化方式引入 SDK 的示例。需要修改 build 文件夹下的 webpack.dev.config.js 文件中的账号信息，然后在本项目根目录下运行 `npm run dev` ，打开浏览器访问 `http://127.0.0.1:14002/index.html` 即可。
 - index.html & index.js：以 script 标签引入 SDK 的示例。需要修改 JS 文件中的 getPolyvAuthorization 变量为有效的请求地址，才能正常使用。
 
 
