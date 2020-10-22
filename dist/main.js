@@ -351,6 +351,8 @@ function (_PubSub) {
 
     if (uploader) {
       uploader._stop();
+
+      this.waitQueue.enqueue(uploader);
     }
   }
   /**
