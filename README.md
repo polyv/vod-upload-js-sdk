@@ -151,6 +151,9 @@ var uploadManager = videoUpload.addFile(
 
 
 ## 版本更新
+### v1.2.1
+- 问题修复
+
 ### v1.2.0
 - 支持使用子账号信息上传视频文件
 
