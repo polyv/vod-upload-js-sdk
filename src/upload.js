@@ -43,6 +43,14 @@ class UploadManager extends PubSub {
     this.isDeleted = false; // 从列表删除后改为true，用于判断stop回调里面是否要重新加到waitQueue
   }
 
+  addRejectListener(reject) {
+    this.reject = reject;
+  }
+
+  addResolveListener(resolve) {
+    this.resolve = resolve;
+  }
+
   // 修改文件信息
   updateFileData(fileData) {
     for (const key in fileData) {
@@ -286,11 +294,11 @@ class UploadManager extends PubSub {
   // 停止文件上传
   _stop() {
     if (this.statusCode !== 0) { // 上传中
-      return;
+      return this.resolve();
     }
     this.statusCode = 2; // 暂停状态
     if (!this.ossClient) {
-      return;
+      return this.resolve();
     }
     this.ossClient.cancel();
   }

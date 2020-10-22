@@ -30,7 +30,7 @@ export class Pool {
 
   /**
    * 将任务添加到等待列表的末尾，并检查是否可以立刻执行
-   * @param {Object} task 任务
+   * @param {Object} task 执行任务的主体
    * @return {Promise}
    */
   enqueue(task) {
@@ -41,6 +41,8 @@ export class Pool {
         resolve,
         reject
       });
+      task.addRejectListener(reject);
+      task.addResolveListener(resolve);
       this._check();
     });
   }

@@ -207,6 +207,7 @@ class PlvVideoUpload extends PubSub {
     const uploader = this.uploadPool.remove(id);
     if (uploader) {
       uploader._stop();
+      this.waitQueue.enqueue(uploader);
     }
   }
 

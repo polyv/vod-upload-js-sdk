@@ -351,6 +351,8 @@ function (_PubSub) {
 
     if (uploader) {
       uploader._stop();
+
+      this.waitQueue.enqueue(uploader);
     }
   }
   /**
@@ -1642,10 +1644,18 @@ function (_PubSub) {
     _this.isDeleted = false; // 从列表删除后改为true，用于判断stop回调里面是否要重新加到waitQueue
 
     return _this;
-  } // 修改文件信息
-
+  }
 
   var _proto = UploadManager.prototype;
+
+  _proto.addRejectListener = function addRejectListener(reject) {
+    this.reject = reject;
+  };
+
+  _proto.addResolveListener = function addResolveListener(resolve) {
+    this.resolve = resolve;
+  } // 修改文件信息
+  ;
 
   _proto.updateFileData = function updateFileData(fileData) {
     for (var key in fileData) {
@@ -1900,13 +1910,13 @@ function (_PubSub) {
   _proto._stop = function _stop() {
     if (this.statusCode !== 0) {
       // 上传中
-      return;
+      return this.resolve();
     }
 
     this.statusCode = 2; // 暂停状态
 
     if (!this.ossClient) {
-      return;
+      return this.resolve();
     }
 
     this.ossClient.cancel();
@@ -18990,7 +19000,7 @@ function () {
 
   /**
    * 将任务添加到等待列表的末尾，并检查是否可以立刻执行
-   * @param {Object} task 任务
+   * @param {Object} task 执行任务的主体
    * @return {Promise}
    */
   _proto.enqueue = function enqueue(task) {
@@ -19003,6 +19013,9 @@ function () {
         resolve: resolve,
         reject: reject
       });
+
+      task.addRejectListener(reject);
+      task.addResolveListener(resolve);
 
       _this._check();
     });
