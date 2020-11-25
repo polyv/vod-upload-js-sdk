@@ -115,7 +115,8 @@ function onFileSucceed({ uploaderid, fileData }) {
   $uploadList.find(`[data-id=${uploaderid}] .progress`).css('min-width', '100%').text('上传完成');
 }
 
-function onFileFailed({ uploaderid }) {
+function onFileFailed({ uploaderid, errData }) {
+  console.info('上传失败', errData);
   $uploadList.find(`[data-id=${uploaderid}] .progress`).text('上传失败');
 }
 

@@ -348,6 +348,13 @@ class PlvVideoUpload extends PubSub {
 }
 
 /**
+ * @typedef {Object} ErrorData
+ * @property {String} type - 错误类型
+ * @property {String} message - 错误信息
+ * @property {Number} code - 错误代码
+ */
+
+/**
  * @typedef {Object} FileData
  * @property {String} desc - 视频文件的描述内容
  * @property {Number} cataid=1 - 上传目录id
@@ -431,7 +438,7 @@ class PlvVideoUpload extends PubSub {
  * @event PlvVideoUpload#FileFailed
  * @property {String} uploaderid 触发事件的UploadManager的id
  * @property {FileData} fileData 文件信息
- * @property {Error|Object} errData 报错信息
+ * @property {ErrorData} errData 报错信息
  */
 
 export default PlvVideoUpload;
