@@ -1,6 +1,6 @@
 import PlvVideoUpload from '../src/index';
 const $ = window.jQuery;
-const isSubAccount = true; // 测试子账号
+const isSubAccount = false; // 测试子账号
 const getPolyvAuthorization = `/getToken?isSubAccount=${isSubAccount ? 'Y' : 'N'}`;
 
 function transformSize(bytes) {
@@ -112,7 +112,8 @@ function onFileSucceed({ uploaderid, fileData }) {
   $uploadList.find(`[data-id=${uploaderid}] .progress`).css('min-width', '100%').text('上传完成');
 }
 
-function onFileFailed({ uploaderid }) {
+function onFileFailed({ uploaderid, errData }) {
+  console.info('上传失败：', errData);
   $uploadList.find(`[data-id=${uploaderid}] .progress`).text('上传失败');
 }
 

@@ -81,7 +81,11 @@ class UploadManager extends PubSub {
 
       // 上传失败
       if (res.code !== 200) {
-        this._emitFileFailed(res);
+        this._emitFileFailed({
+          code: res.code,
+          message: res.message,
+          name: 'InitUploadError',
+        });
         return Promise.resolve({
           data: {
             uploader: this,
@@ -130,7 +134,11 @@ class UploadManager extends PubSub {
       return this._multipartUpload();
     }).catch((err) => {
       // 上传失败
-      this._emitFileFailed(err);
+      this._emitFileFailed({
+        code: '',
+        message: err.message,
+        name: 'MultipartUploadError',
+      });
       return Promise.resolve({
         data: {
           uploader: this,
@@ -204,7 +212,11 @@ class UploadManager extends PubSub {
         clearLocalFileInfo(this.fileData.id);
         return this._retry(resolve);
       }
-      this._emitFileFailed(err);
+      this._emitFileFailed({
+        code: '',
+        message: err.message,
+        name: 'NoSuchUploadError',
+      });
       return resolve({
         data: {
           uploader: this,
@@ -225,7 +237,11 @@ class UploadManager extends PubSub {
     }
 
     // 上传失败
-    this._emitFileFailed(err);
+    this._emitFileFailed({
+      code: '',
+      message: err.message,
+      name: err.name,
+    });
     return resolve({
       data: {
         uploader: this,
@@ -254,7 +270,11 @@ class UploadManager extends PubSub {
       .then(res => {
         // 请求失败
         if ('success' !== res.status) {
-          this._emitFileFailed(res);
+          this._emitFileFailed({
+            code: '',
+            message: res.message,
+            name: 'UpdateTokenError',
+          });
           return resolve({
             data: {
               uploader: this,
@@ -275,7 +295,11 @@ class UploadManager extends PubSub {
         });
       })
       .catch((err) => {
-        this._emitFileFailed(err);
+        this._emitFileFailed({
+          code: '',
+          message: '接口请求失败',
+          name: 'UpdateTokenError',
+        });
         return reject(err);
       });
   }

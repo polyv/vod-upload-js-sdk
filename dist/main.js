@@ -533,6 +533,13 @@ function (_PubSub) {
   return PlvVideoUpload;
 }(_pubsub.default);
 /**
+ * @typedef {Object} ErrorData
+ * @property {String} name - 错误名称
+ * @property {String} message - 错误信息
+ * @property {Number} code - 错误代码
+ */
+
+/**
  * @typedef {Object} FileData
  * @property {String} desc - 视频文件的描述内容
  * @property {Number} cataid=1 - 上传目录id
@@ -616,7 +623,7 @@ function (_PubSub) {
  * @event PlvVideoUpload#FileFailed
  * @property {String} uploaderid 触发事件的UploadManager的id
  * @property {FileData} fileData 文件信息
- * @property {Error|Object} errData 报错信息
+ * @property {ErrorData} errData 报错信息
  */
 
 
@@ -1691,7 +1698,11 @@ function (_PubSub) {
       var data = res.data; // 上传失败
 
       if (res.code !== 200) {
-        _this2._emitFileFailed(res);
+        _this2._emitFileFailed({
+          code: res.code,
+          message: res.message,
+          name: 'InitUploadError'
+        });
 
         return _promise.default.resolve({
           data: {
@@ -1739,7 +1750,11 @@ function (_PubSub) {
       return _this2._multipartUpload();
     }).catch(function (err) {
       // 上传失败
-      _this2._emitFileFailed(err);
+      _this2._emitFileFailed({
+        code: '',
+        message: err.message,
+        name: 'MultipartUploadError'
+      });
 
       return _promise.default.resolve({
         data: {
@@ -1815,7 +1830,11 @@ function (_PubSub) {
         return this._retry(resolve);
       }
 
-      this._emitFileFailed(err);
+      this._emitFileFailed({
+        code: '',
+        message: err.message,
+        name: 'NoSuchUploadError'
+      });
 
       return resolve({
         data: {
@@ -1837,7 +1856,11 @@ function (_PubSub) {
     } // 上传失败
 
 
-    this._emitFileFailed(err);
+    this._emitFileFailed({
+      code: '',
+      message: err.message,
+      name: err.name
+    });
 
     return resolve({
       data: {
@@ -1868,7 +1891,11 @@ function (_PubSub) {
     (0, _utils.getToken)(this.userData).then(function (res) {
       // 请求失败
       if ('success' !== res.status) {
-        _this4._emitFileFailed(res);
+        _this4._emitFileFailed({
+          code: '',
+          message: res.message,
+          name: 'UpdateTokenError'
+        });
 
         return resolve({
           data: {
@@ -1889,7 +1916,11 @@ function (_PubSub) {
         }
       });
     }).catch(function (err) {
-      _this4._emitFileFailed(err);
+      _this4._emitFileFailed({
+        code: '',
+        message: '接口请求失败',
+        name: 'UpdateTokenError'
+      });
 
       return reject(err);
     });
