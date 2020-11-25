@@ -84,7 +84,7 @@ class UploadManager extends PubSub {
         this._emitFileFailed({
           code: res.code,
           message: res.message,
-          name: 'InitUploadError',
+          type: 'InitUploadError',
         });
         return Promise.resolve({
           data: {
@@ -137,7 +137,7 @@ class UploadManager extends PubSub {
       this._emitFileFailed({
         code: '',
         message: err.message,
-        name: 'MultipartUploadError',
+        type: 'MultipartUploadError',
       });
       return Promise.resolve({
         data: {
@@ -215,7 +215,7 @@ class UploadManager extends PubSub {
       this._emitFileFailed({
         code: '',
         message: err.message,
-        name: 'NoSuchUploadError',
+        type: 'NoSuchUploadError',
       });
       return resolve({
         data: {
@@ -240,7 +240,7 @@ class UploadManager extends PubSub {
     this._emitFileFailed({
       code: '',
       message: err.message,
-      name: err.name,
+      type: err.name,
     });
     return resolve({
       data: {
@@ -273,7 +273,7 @@ class UploadManager extends PubSub {
           this._emitFileFailed({
             code: '',
             message: res.message,
-            name: 'UpdateTokenError',
+            type: 'UpdateTokenError',
           });
           return resolve({
             data: {
@@ -298,7 +298,7 @@ class UploadManager extends PubSub {
         this._emitFileFailed({
           code: '',
           message: '接口请求失败',
-          name: 'UpdateTokenError',
+          type: 'UpdateTokenError',
         });
         return reject(err);
       });

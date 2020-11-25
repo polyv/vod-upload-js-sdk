@@ -534,7 +534,7 @@ function (_PubSub) {
 }(_pubsub.default);
 /**
  * @typedef {Object} ErrorData
- * @property {String} name - 错误名称
+ * @property {String} type - 错误类型
  * @property {String} message - 错误信息
  * @property {Number} code - 错误代码
  */
@@ -1701,7 +1701,7 @@ function (_PubSub) {
         _this2._emitFileFailed({
           code: res.code,
           message: res.message,
-          name: 'InitUploadError'
+          type: 'InitUploadError'
         });
 
         return _promise.default.resolve({
@@ -1753,7 +1753,7 @@ function (_PubSub) {
       _this2._emitFileFailed({
         code: '',
         message: err.message,
-        name: 'MultipartUploadError'
+        type: 'MultipartUploadError'
       });
 
       return _promise.default.resolve({
@@ -1833,7 +1833,7 @@ function (_PubSub) {
       this._emitFileFailed({
         code: '',
         message: err.message,
-        name: 'NoSuchUploadError'
+        type: 'NoSuchUploadError'
       });
 
       return resolve({
@@ -1859,7 +1859,7 @@ function (_PubSub) {
     this._emitFileFailed({
       code: '',
       message: err.message,
-      name: err.name
+      type: err.name
     });
 
     return resolve({
@@ -1894,7 +1894,7 @@ function (_PubSub) {
         _this4._emitFileFailed({
           code: '',
           message: res.message,
-          name: 'UpdateTokenError'
+          type: 'UpdateTokenError'
         });
 
         return resolve({
@@ -1919,7 +1919,7 @@ function (_PubSub) {
       _this4._emitFileFailed({
         code: '',
         message: '接口请求失败',
-        name: 'UpdateTokenError'
+        type: 'UpdateTokenError'
       });
 
       return reject(err);

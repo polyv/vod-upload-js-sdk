@@ -349,7 +349,7 @@ class PlvVideoUpload extends PubSub {
 
 /**
  * @typedef {Object} ErrorData
- * @property {String} name - 错误名称
+ * @property {String} type - 错误类型
  * @property {String} message - 错误信息
  * @property {Number} code - 错误代码
  */

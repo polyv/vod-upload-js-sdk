@@ -153,7 +153,7 @@ Error 事件已知错误类型：
 
 FileFailed 事件已知错误类型：
 
-| name                 | code | 描述                         |
+| type                 | code | 描述                         |
 | -------------------- | ---- | ---------------------------- |
 | InitUploadError      | 3001 | 分类不存在                   |
 | InitUploadError      | 405  | 上传视频初始化失败           |
