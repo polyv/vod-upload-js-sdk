@@ -73,7 +73,9 @@ export function initUpload(userData, fileData) {
 
     autoid: 1, // 自动生成vid，无需在请求参数中传vid
     uploadType: 'js_sdk_chunk_v1',
-    compatible: 1
+    compatible: 1,
+
+    uploadLine: userData.region
   };
   const url = `//api.polyv.net/v2/uploadvideo/${userData.userid}/init`;
   return ajax.send(url, { method: 'POST', data: data });
@@ -90,7 +92,8 @@ export function getToken(userData) {
       appId: userData.appId,
       timestamp: userData.timestamp,
       sign: userData.sign,
-      isSts: 'Y'
+      isSts: 'Y',
+      uploadLine: userData.region
     };
     const url = '//api.polyv.net/inner/v3/upload/video/create-upload-token';
     return ajax.send(url, { method: 'GET', data: data });
@@ -99,7 +102,8 @@ export function getToken(userData) {
     ptime: userData.ptime,
     sign: userData.sign,
     hash: userData.hash,
-    compatible: 1
+    compatible: 1,
+    uploadLine: userData.region
   };
   const url = `//api.polyv.net/v2/uploadvideo/${userData.userid}/token`;
   return ajax.send(url, { method: 'GET', data: data });
