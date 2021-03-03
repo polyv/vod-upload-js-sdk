@@ -25,7 +25,7 @@ Polyv JavaScript 上传 SDK 为您提供上传媒体文件到[保利威云点播
 #### 方法一：引入在线资源
 ```html
 <!-- 指定版本 -->
-<script src="//player.polyv.net/resp/vod-upload-js-sdk/1.1.0/vod-upload-js-sdk.min.js"></script>
+<script src="//player.polyv.net/resp/vod-upload-js-sdk/1.2.2/vod-upload-js-sdk.min.js"></script>
 <!-- 最新版本 -->
 <script src="//player.polyv.net/resp/vod-upload-js-sdk/latest/vod-upload-js-sdk.min.js"></script>
 ```
@@ -137,22 +137,57 @@ var uploadManager = videoUpload.addFile(
 ## 示例代码
 源代码中的 demo 文件夹包含两个示例：
 
-- dev.html & dev.js：以模块化方式引入 SDK 的示例。在本项目根目录下运行 `npm run dev` ，打开浏览器访问 `http://127.0.0.1:14002/index.html` 即可。
-- index.html & index.js：以 script 标签引入 SDK 的示例。
-
-此外，还要修改 JS 文件中的 getPolyvAuthorization 变量为有效的请求地址，才能正常使用。
-
+- dev.html & dev.js：以模块化方式引入 SDK 的示例。需要修改 build 文件夹下的 webpack.dev.config.js 文件中的账号信息，然后在本项目根目录下运行 `npm run dev` ，打开浏览器访问 `http://127.0.0.1:14002/index.html` 即可。
+- index.html & index.js：以 script 标签引入 SDK 的示例。需要修改 JS 文件中的 getPolyvAuthorization 变量为有效的请求地址，才能正常使用。
 
 ## 错误代码
-| 错误代码 | 描述 |
+
+Error 事件已知错误类型：
+
+| code | 描述 |
 | -- | -- |
 | 102 | 用户剩余空间不足 |
 | 110 | 文件重复 |
 | 111 | 拦截文件类型不在 acceptedMimeType 中的文件 |
 | 112 | 文件已经开始上传或已上传完毕，禁止修改文件信息 |
 
+FileFailed 事件已知错误类型：
+
+| type                 | code | 描述                         |
+| -------------------- | ---- | ---------------------------- |
+| InitUploadError      | 3001 | 分类不存在                   |
+| InitUploadError      | 405  | 上传视频初始化失败           |
+| InitUploadError      | 406  | 视频大小不能为0              |
+| InitUploadError      | 408  | 账户服务状态异常，请联系客服 |
+| MultipartUploadError |      | 断点续传时出错               |
+| UpdateTokenError     |      | 更新上传token时获取token失败 |
+| NoSuchUploadError    |      | Multipart Upload ID 不存在   |
+
+
 
 ## 版本更新
-### v1.0.0
+### v1.2.2
+- cataid 不存在时返回提示。
+- 规范FileFailed事件返回的数据格式与字段名称。
+
+### v1.2.1
+- 问题修复
+
+### v1.2.0
+- 支持使用子账号信息上传视频文件
+
+### v1.1.3
+- 优化文件上传失败时的回调message
+
+### v1.1.2
+- 增加支持文件名后缀大写的文件上传，如 file_example.MP3
+- 修改示例代码
+
+### v1.1.1
+- 优化文件上传失败时的重试逻辑
+- 文件上传失败时返回的错误信息中增加 errData 属性
+
 ### v1.1.0
 - 增加对自定义信息字段的支持
+
+### v1.0.0

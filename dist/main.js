@@ -351,6 +351,8 @@ function (_PubSub) {
 
     if (uploader) {
       uploader._stop();
+
+      this.waitQueue.enqueue(uploader);
     }
   }
   /**
@@ -495,7 +497,7 @@ function (_PubSub) {
       case 107:
         {
           // 上传错误，正在重试
-          this.newUploadPromiseList.push(data.promise);
+          this.newUploadPromiseList.push(this.uploadPool.enqueue(data.uploader));
 
           if (this.status === STATUS.NOT_STARTED) {
             this._onPromiseEnd();
@@ -531,6 +533,13 @@ function (_PubSub) {
   return PlvVideoUpload;
 }(_pubsub.default);
 /**
+ * @typedef {Object} ErrorData
+ * @property {String} type - 错误类型
+ * @property {String} message - 错误信息
+ * @property {Number} code - 错误代码
+ */
+
+/**
  * @typedef {Object} FileData
  * @property {String} desc - 视频文件的描述内容
  * @property {Number} cataid=1 - 上传目录id
@@ -547,11 +556,14 @@ function (_PubSub) {
 
 /**
  * @typedef {Object} UserData
- * @property {String} userid - userid
- * @property {Number} ptime - 13位的毫秒级时间戳
- * @property {String} sign - 是根据将secretkey和ptime按照顺序拼凑起来的字符串进行MD5计算得到的值
- * @property {String} hash - 是根据将ptime和writeToken按照顺序拼凑起来的字符串进行MD5计算得到的值
- * @description 这里的ptime、hash、sign有一定的时间期限，需要使用{@link PlvVideoUpload#updateUserData}方法每隔3分钟更新一次参数
+ * @property {String} userid - [主账号]userid。需要在点播后台中获取。
+ * @property {Number} ptime - [主账号]13位的毫秒级时间戳
+ * @property {String} sign - [主账号]校验值其一，计算方式：md5(`${secretkey}${ptime}`)。secretkey需要在点播后台中获取。
+ * @property {String} hash - [主账号]校验值其二，计算方式：md5(`${ptime}${writeToken}`)。writeToken需要在点播后台中获取。
+ * @property {String} appId - [子账号]appId。需要在点播后台中获取。
+ * @property {Number} timestamp - [子账号]13位的毫秒级时间戳
+ * @property {String} sign - [子账号]校验值，计算方式：md5(`${secretkey}appId${appId}timestamp${timestamp}${secretkey}`).toUpperCase()。secretkey和appId需要在点播后台中获取。
+ * @description 主账号/子账号的用户信息及校验值。这里的校验值有一定的时间期限，需要使用{@link PlvVideoUpload#updateUserData}方法每隔3分钟更新一次所有参数。
  */
 
 /**
@@ -594,6 +606,7 @@ function (_PubSub) {
  * @event PlvVideoUpload#FileProgress
  * @type {Object}
  * @property {String} uploaderid 触发事件的UploadManager的id
+ * @property {FileData} fileData 文件信息
  * @property {Number} progress 上传进度，范围为0~1
  */
 
@@ -609,6 +622,8 @@ function (_PubSub) {
  * 文件上传失败时触发。
  * @event PlvVideoUpload#FileFailed
  * @property {String} uploaderid 触发事件的UploadManager的id
+ * @property {FileData} fileData 文件信息
+ * @property {ErrorData} errData 报错信息
  */
 
 
@@ -1636,10 +1651,18 @@ function (_PubSub) {
     _this.isDeleted = false; // 从列表删除后改为true，用于判断stop回调里面是否要重新加到waitQueue
 
     return _this;
-  } // 修改文件信息
-
+  }
 
   var _proto = UploadManager.prototype;
+
+  _proto.addRejectListener = function addRejectListener(reject) {
+    this.reject = reject;
+  };
+
+  _proto.addResolveListener = function addResolveListener(resolve) {
+    this.resolve = resolve;
+  } // 修改文件信息
+  ;
 
   _proto.updateFileData = function updateFileData(fileData) {
     for (var key in fileData) {
@@ -1675,14 +1698,18 @@ function (_PubSub) {
       var data = res.data; // 上传失败
 
       if (res.code !== 200) {
-        _this2._emitFileFailed();
+        _this2._emitFileFailed({
+          code: res.code,
+          message: res.message,
+          type: 'InitUploadError'
+        });
 
         return _promise.default.resolve({
           data: {
             uploader: _this2
           },
           code: 101,
-          message: NET_ERR
+          message: res.message
         });
       } // 用户剩余空间不足
 
@@ -1721,9 +1748,13 @@ function (_PubSub) {
         host: callback.callbackHost
       };
       return _this2._multipartUpload();
-    }).catch(function () {
+    }).catch(function (err) {
       // 上传失败
-      _this2._emitFileFailed();
+      _this2._emitFileFailed({
+        code: '',
+        message: err.message,
+        type: 'MultipartUploadError'
+      });
 
       return _promise.default.resolve({
         data: {
@@ -1794,7 +1825,16 @@ function (_PubSub) {
 
 
     if (err.status == 404 && err.name == 'NoSuchUploadError') {
-      this._emitFileFailed();
+      if (this.retryCount > 0) {
+        (0, _utils.clearLocalFileInfo)(this.fileData.id);
+        return this._retry(resolve);
+      }
+
+      this._emitFileFailed({
+        code: '',
+        message: err.message,
+        type: 'NoSuchUploadError'
+      });
 
       return resolve({
         data: {
@@ -1816,7 +1856,11 @@ function (_PubSub) {
     } // 上传失败
 
 
-    this._emitFileFailed();
+    this._emitFileFailed({
+      code: '',
+      message: err.message,
+      type: err.name
+    });
 
     return resolve({
       data: {
@@ -1835,7 +1879,7 @@ function (_PubSub) {
       code: 107,
       message: '上传错误，正在重试',
       data: {
-        promise: this._multipartUpload()
+        uploader: this
       }
     });
   } // 更新上传token
@@ -1847,7 +1891,11 @@ function (_PubSub) {
     (0, _utils.getToken)(this.userData).then(function (res) {
       // 请求失败
       if ('success' !== res.status) {
-        _this4._emitFileFailed();
+        _this4._emitFileFailed({
+          code: '',
+          message: res.message,
+          type: 'UpdateTokenError'
+        });
 
         return resolve({
           data: {
@@ -1868,16 +1916,24 @@ function (_PubSub) {
         }
       });
     }).catch(function (err) {
+      _this4._emitFileFailed({
+        code: '',
+        message: '接口请求失败',
+        type: 'UpdateTokenError'
+      });
+
       return reject(err);
     });
   };
 
-  _proto._emitFileFailed = function _emitFileFailed() {
+  _proto._emitFileFailed = function _emitFileFailed(errData) {
     /**
      * @fires UploadManager#FileFailed
      */
     this.trigger('FileFailed', {
-      uploaderid: this.id
+      uploaderid: this.id,
+      errData: errData,
+      fileData: this.fileData
     });
   } // 停止文件上传
   ;
@@ -1885,13 +1941,13 @@ function (_PubSub) {
   _proto._stop = function _stop() {
     if (this.statusCode !== 0) {
       // 上传中
-      return;
+      return this.resolve();
     }
 
     this.statusCode = 2; // 暂停状态
 
     if (!this.ossClient) {
-      return;
+      return this.resolve();
     }
 
     this.ossClient.cancel();
@@ -1931,7 +1987,8 @@ function (_PubSub) {
 
               this.trigger('FileProgress', {
                 uploaderid: this.id,
-                progress: progress
+                progress: progress,
+                fileData: this.fileData
               }); // 保存checkpoint信息到localStorage
 
               (0, _utils.setLocalFileInfo)(this.fileData.id, checkpoint);
@@ -17362,6 +17419,32 @@ function getPartSize(fileSize) {
 
 
 function initUpload(userData, fileData) {
+  if (userData.appId) {
+    var _data = {
+      appId: userData.appId,
+      timestamp: userData.timestamp,
+      sign: userData.sign,
+      title: fileData.title,
+      description: fileData.desc,
+      cateId: fileData.cataid,
+      tag: fileData.tag,
+      luping: fileData.luping,
+      filename: fileData.filename,
+      size: fileData.filesize,
+      // fileId: '',
+      keepSource: fileData.keepsource,
+      // vid: '',
+      autoid: 1,
+      isSts: 'Y',
+      uploadType: 'js_sdk_chunk_v1'
+    };
+    var _url = '//api.polyv.net/inner/v3/upload/video/create-upload-task';
+    return _ajax.default.send(_url, {
+      method: 'POST',
+      data: _data
+    });
+  }
+
   var data = {
     ptime: userData.ptime,
     sign: userData.sign,
@@ -17393,6 +17476,20 @@ function initUpload(userData, fileData) {
 
 
 function getToken(userData) {
+  if (userData.appId) {
+    var _data2 = {
+      appId: userData.appId,
+      timestamp: userData.timestamp,
+      sign: userData.sign,
+      isSts: 'Y'
+    };
+    var _url2 = '//api.polyv.net/inner/v3/upload/video/create-upload-token';
+    return _ajax.default.send(_url2, {
+      method: 'GET',
+      data: _data2
+    });
+  }
+
   var data = {
     ptime: userData.ptime,
     sign: userData.sign,
@@ -17478,7 +17575,8 @@ function generateFileData(file, fileSetting, userData) {
     tag: '',
     luping: 0,
     keepsource: 0,
-    title: file.name.replace(/\.\w+$/, '')
+    title: file.name.replace(/\.\w+$/, ''),
+    filename: file.name
   };
 
   for (var key in fileSetting) {
@@ -17552,7 +17650,7 @@ var DEFAULT_ACCEPTED_MIME_TYPE = 'video/avi,.avi,.f4v,video/mpeg,.mpg,video/mp4,
 
 function _isContainFileMimeType(file, acceptedMimeType) {
   var acceptedList = acceptedMimeType.split(',');
-  return acceptedList.indexOf(file.type) > -1 || acceptedList.indexOf(file.name.replace(/.+(\..+)$/, '$1')) > -1;
+  return acceptedList.indexOf(file.type) > -1 || acceptedList.indexOf(file.name.replace(/.+(\..+)$/, '$1').toLowerCase()) > -1;
 }
 /**
  * 上传文件的文件类型是否在允许范围内
@@ -18933,7 +19031,7 @@ function () {
 
   /**
    * 将任务添加到等待列表的末尾，并检查是否可以立刻执行
-   * @param {Object} task 任务
+   * @param {Object} task 执行任务的主体
    * @return {Promise}
    */
   _proto.enqueue = function enqueue(task) {
@@ -18946,6 +19044,9 @@ function () {
         resolve: resolve,
         reject: reject
       });
+
+      task.addRejectListener(reject);
+      task.addResolveListener(resolve);
 
       _this._check();
     });

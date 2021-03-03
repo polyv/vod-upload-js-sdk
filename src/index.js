@@ -207,6 +207,7 @@ class PlvVideoUpload extends PubSub {
     const uploader = this.uploadPool.remove(id);
     if (uploader) {
       uploader._stop();
+      this.waitQueue.enqueue(uploader);
     }
   }
 
@@ -318,7 +319,7 @@ class PlvVideoUpload extends PubSub {
       }
       case 106: // token过期，正在重试
       case 107: { // 上传错误，正在重试
-        this.newUploadPromiseList.push(data.promise);
+        this.newUploadPromiseList.push(this.uploadPool.enqueue(data.uploader));
         if (this.status === STATUS.NOT_STARTED) {
           this._onPromiseEnd();
         }
@@ -347,6 +348,13 @@ class PlvVideoUpload extends PubSub {
 }
 
 /**
+ * @typedef {Object} ErrorData
+ * @property {String} type - 错误类型
+ * @property {String} message - 错误信息
+ * @property {Number} code - 错误代码
+ */
+
+/**
  * @typedef {Object} FileData
  * @property {String} desc - 视频文件的描述内容
  * @property {Number} cataid=1 - 上传目录id
@@ -363,11 +371,14 @@ class PlvVideoUpload extends PubSub {
 
 /**
  * @typedef {Object} UserData
- * @property {String} userid - userid
- * @property {Number} ptime - 13位的毫秒级时间戳
- * @property {String} sign - 是根据将secretkey和ptime按照顺序拼凑起来的字符串进行MD5计算得到的值
- * @property {String} hash - 是根据将ptime和writeToken按照顺序拼凑起来的字符串进行MD5计算得到的值
- * @description 这里的ptime、hash、sign有一定的时间期限，需要使用{@link PlvVideoUpload#updateUserData}方法每隔3分钟更新一次参数
+ * @property {String} userid - [主账号]userid。需要在点播后台中获取。
+ * @property {Number} ptime - [主账号]13位的毫秒级时间戳
+ * @property {String} sign - [主账号]校验值其一，计算方式：md5(`${secretkey}${ptime}`)。secretkey需要在点播后台中获取。
+ * @property {String} hash - [主账号]校验值其二，计算方式：md5(`${ptime}${writeToken}`)。writeToken需要在点播后台中获取。
+ * @property {String} appId - [子账号]appId。需要在点播后台中获取。
+ * @property {Number} timestamp - [子账号]13位的毫秒级时间戳
+ * @property {String} sign - [子账号]校验值，计算方式：md5(`${secretkey}appId${appId}timestamp${timestamp}${secretkey}`).toUpperCase()。secretkey和appId需要在点播后台中获取。
+ * @description 主账号/子账号的用户信息及校验值。这里的校验值有一定的时间期限，需要使用{@link PlvVideoUpload#updateUserData}方法每隔3分钟更新一次所有参数。
  */
 
 /**
@@ -410,6 +421,7 @@ class PlvVideoUpload extends PubSub {
  * @event PlvVideoUpload#FileProgress
  * @type {Object}
  * @property {String} uploaderid 触发事件的UploadManager的id
+ * @property {FileData} fileData 文件信息
  * @property {Number} progress 上传进度，范围为0~1
  */
 
@@ -425,6 +437,8 @@ class PlvVideoUpload extends PubSub {
  * 文件上传失败时触发。
  * @event PlvVideoUpload#FileFailed
  * @property {String} uploaderid 触发事件的UploadManager的id
+ * @property {FileData} fileData 文件信息
+ * @property {ErrorData} errData 报错信息
  */
 
 export default PlvVideoUpload;

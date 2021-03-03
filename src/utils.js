@@ -35,6 +35,28 @@ export function getPartSize(fileSize) {
  * @returns {Promise}
  */
 export function initUpload(userData, fileData) {
+  if (userData.appId) {
+    const data = {
+      appId: userData.appId,
+      timestamp: userData.timestamp,
+      sign: userData.sign,
+      title: fileData.title,
+      description: fileData.desc,
+      cateId: fileData.cataid,
+      tag: fileData.tag,
+      luping: fileData.luping,
+      filename: fileData.filename,
+      size: fileData.filesize,
+      // fileId: '',
+      keepSource: fileData.keepsource,
+      // vid: '',
+      autoid: 1,
+      isSts: 'Y',
+      uploadType: 'js_sdk_chunk_v1',
+    };
+    const url = '//api.polyv.net/inner/v3/upload/video/create-upload-task';
+    return ajax.send(url, { method: 'POST', data: data });
+  }
   const data = {
     ptime: userData.ptime,
     sign: userData.sign,
@@ -63,6 +85,16 @@ export function initUpload(userData, fileData) {
  * @returns {Promise}
  */
 export function getToken(userData) {
+  if (userData.appId) {
+    const data = {
+      appId: userData.appId,
+      timestamp: userData.timestamp,
+      sign: userData.sign,
+      isSts: 'Y'
+    };
+    const url = '//api.polyv.net/inner/v3/upload/video/create-upload-token';
+    return ajax.send(url, { method: 'GET', data: data });
+  }
   const data = {
     ptime: userData.ptime,
     sign: userData.sign,
@@ -139,6 +171,7 @@ export function generateFileData(file, fileSetting, userData) {
     luping: 0,
     keepsource: 0,
     title: file.name.replace(/\.\w+$/, ''),
+    filename: file.name
   };
   for (const key in fileSetting) {
     if (key === 'title') {
@@ -187,7 +220,7 @@ export function generateOssConfig(data) {
 const DEFAULT_ACCEPTED_MIME_TYPE = 'video/avi,.avi,.f4v,video/mpeg,.mpg,video/mp4,.mp4,video/x-flv,.flv,video/x-ms-wmv,.wmv,video/quicktime,.mov,video/3gpp,.3gp,.rmvb,video/x-matroska,.mkv,.asf,.264,.ts,.mts,.dat,.vob,audio/mpeg,.mp3,audio/x-wav,.wav,video/x-m4v,.m4v,video/webm,.webm,.mod';
 function _isContainFileMimeType(file, acceptedMimeType) {
   const acceptedList = acceptedMimeType.split(',');
-  return acceptedList.indexOf(file.type) > -1 || acceptedList.indexOf(file.name.replace(/.+(\..+)$/, '$1')) > -1;
+  return acceptedList.indexOf(file.type) > -1 || acceptedList.indexOf(file.name.replace(/.+(\..+)$/, '$1').toLowerCase()) > -1;
 }
 
 /**

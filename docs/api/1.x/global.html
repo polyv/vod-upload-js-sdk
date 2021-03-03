@@ -102,6 +102,172 @@
 
         
                 
+<h4 class="name" id="ErrorData">ErrorData</h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">错误类型</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">错误信息</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>code</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">错误代码</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line350">line 350</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
 <h4 class="name" id="FileData">FileData</h4>
 
 
@@ -481,7 +647,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line349">line 349</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line357">line 357</a>
     </li></ul></dd>
     
 
@@ -601,7 +767,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line373">line 373</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line384">line 384</a>
     </li></ul></dd>
     
 
@@ -625,7 +791,7 @@
 
 
 <div class="description">
-    这里的ptime、hash、sign有一定的时间期限，需要使用<a href="PlvVideoUpload.html#updateUserData">PlvVideoUpload#updateUserData</a>方法每隔3分钟更新一次参数
+    主账号/子账号的用户信息及校验值。这里的校验值有一定的时间期限，需要使用<a href="PlvVideoUpload.html#updateUserData">PlvVideoUpload#updateUserData</a>方法每隔3分钟更新一次所有参数。
 </div>
 
 
@@ -686,7 +852,7 @@
 
             
 
-            <td class="description last">userid</td>
+            <td class="description last">[主账号]userid。需要在点播后台中获取。</td>
         </tr>
 
     
@@ -709,7 +875,7 @@
 
             
 
-            <td class="description last">13位的毫秒级时间戳</td>
+            <td class="description last">[主账号]13位的毫秒级时间戳</td>
         </tr>
 
     
@@ -732,7 +898,7 @@
 
             
 
-            <td class="description last">是根据将secretkey和ptime按照顺序拼凑起来的字符串进行MD5计算得到的值</td>
+            <td class="description last">[主账号]校验值其一，计算方式：md5(`${secretkey}${ptime}`)。secretkey需要在点播后台中获取。</td>
         </tr>
 
     
@@ -755,7 +921,76 @@
 
             
 
-            <td class="description last">是根据将ptime和writeToken按照顺序拼凑起来的字符串进行MD5计算得到的值</td>
+            <td class="description last">[主账号]校验值其二，计算方式：md5(`${ptime}${writeToken}`)。writeToken需要在点播后台中获取。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>appId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[子账号]appId。需要在点播后台中获取。</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timestamp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[子账号]13位的毫秒级时间戳</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>sign</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[子账号]校验值，计算方式：md5(`${secretkey}appId${appId}timestamp${timestamp}${secretkey}`).toUpperCase()。secretkey和appId需要在点播后台中获取。</td>
         </tr>
 
     
@@ -794,7 +1029,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line364">line 364</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line372">line 372</a>
     </li></ul></dd>
     
 
@@ -830,7 +1065,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 09 2019 15:30:12 GMT+0800 (GMT+08:00)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Nov 25 2020 18:16:02 GMT+0800 (GMT+08:00)
 </footer>
 
 <script> prettyPrint(); </script>

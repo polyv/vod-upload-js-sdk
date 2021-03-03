@@ -43,6 +43,14 @@ class UploadManager extends PubSub {
     this.isDeleted = false; // 从列表删除后改为true，用于判断stop回调里面是否要重新加到waitQueue
   }
 
+  addRejectListener(reject) {
+    this.reject = reject;
+  }
+
+  addResolveListener(resolve) {
+    this.resolve = resolve;
+  }
+
   // 修改文件信息
   updateFileData(fileData) {
     for (const key in fileData) {
@@ -73,13 +81,17 @@ class UploadManager extends PubSub {
 
       // 上传失败
       if (res.code !== 200) {
-        this._emitFileFailed();
+        this._emitFileFailed({
+          code: res.code,
+          message: res.message,
+          type: 'InitUploadError',
+        });
         return Promise.resolve({
           data: {
             uploader: this,
           },
           code: 101,
-          message: NET_ERR
+          message: res.message
         });
       }
 
@@ -120,9 +132,13 @@ class UploadManager extends PubSub {
       };
 
       return this._multipartUpload();
-    }).catch(() => {
+    }).catch((err) => {
       // 上传失败
-      this._emitFileFailed();
+      this._emitFileFailed({
+        code: '',
+        message: err.message,
+        type: 'MultipartUploadError',
+      });
       return Promise.resolve({
         data: {
           uploader: this,
@@ -192,7 +208,15 @@ class UploadManager extends PubSub {
 
     // Multipart Upload ID 不存在
     if (err.status == 404 && err.name == 'NoSuchUploadError') {
-      this._emitFileFailed();
+      if (this.retryCount > 0) {
+        clearLocalFileInfo(this.fileData.id);
+        return this._retry(resolve);
+      }
+      this._emitFileFailed({
+        code: '',
+        message: err.message,
+        type: 'NoSuchUploadError',
+      });
       return resolve({
         data: {
           uploader: this,
@@ -213,7 +237,11 @@ class UploadManager extends PubSub {
     }
 
     // 上传失败
-    this._emitFileFailed();
+    this._emitFileFailed({
+      code: '',
+      message: err.message,
+      type: err.name,
+    });
     return resolve({
       data: {
         uploader: this,
@@ -231,7 +259,7 @@ class UploadManager extends PubSub {
       code: 107,
       message: '上传错误，正在重试',
       data: {
-        promise: this._multipartUpload()
+        uploader: this
       }
     });
   }
@@ -242,7 +270,11 @@ class UploadManager extends PubSub {
       .then(res => {
         // 请求失败
         if ('success' !== res.status) {
-          this._emitFileFailed();
+          this._emitFileFailed({
+            code: '',
+            message: res.message,
+            type: 'UpdateTokenError',
+          });
           return resolve({
             data: {
               uploader: this,
@@ -263,27 +295,34 @@ class UploadManager extends PubSub {
         });
       })
       .catch((err) => {
+        this._emitFileFailed({
+          code: '',
+          message: '接口请求失败',
+          type: 'UpdateTokenError',
+        });
         return reject(err);
       });
   }
 
-  _emitFileFailed() {
+  _emitFileFailed(errData) {
     /**
      * @fires UploadManager#FileFailed
      */
     this.trigger('FileFailed', {
-      uploaderid: this.id
+      uploaderid: this.id,
+      errData,
+      fileData: this.fileData
     });
   }
 
   // 停止文件上传
   _stop() {
     if (this.statusCode !== 0) { // 上传中
-      return;
+      return this.resolve();
     }
     this.statusCode = 2; // 暂停状态
     if (!this.ossClient) {
-      return;
+      return this.resolve();
     }
     this.ossClient.cancel();
   }
@@ -310,7 +349,8 @@ class UploadManager extends PubSub {
      */
     this.trigger('FileProgress', {
       uploaderid: this.id,
-      progress
+      progress,
+      fileData: this.fileData
     });
     // 保存checkpoint信息到localStorage
     setLocalFileInfo(this.fileData.id, checkpoint);
