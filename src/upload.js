@@ -37,7 +37,7 @@ class UploadManager extends PubSub {
     this.partSize = config.partSize;
     this.retryCount = typeof config.retryCount === 'number' ? config.retryCount : 3;
 
-    this.userData.region = config.region || 'line1';  // 线路
+    this.userData.region = config.region || 'line1'; // 线路
 
     this.statusCode = 1; // 文件的上传状态码：-1 已完成 0 上传中 1 未开始 2 暂停状态
     this.percentage = 0;
