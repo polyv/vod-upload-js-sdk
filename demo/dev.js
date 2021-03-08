@@ -71,7 +71,8 @@ const videoUpload = new PlvVideoUpload({
   events: {
     UploadComplete: onUploadComplete,
     Error: onError
-  }
+  },
+  region: 'line1'
 });
 autoUpdateUserData(null, videoUpload);
 
