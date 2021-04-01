@@ -52,6 +52,7 @@ class PlvVideoUpload extends PubSub {
       threadCount: config.threadCount, // 上传并发线程数
       retryCount: config.retryCount, // 网络原因失败时，重新上传次数
       acceptedMimeType: config.acceptedMimeType, // 用户自定义在一定范围内允许上传的文件类型
+      region: config.region || 'line1' // 上传线路, 默认line1, 华南
     };
 
     let parallelFileLimit = config.parallelFileLimit || 5; // 并行上传的文件数目；最大5个

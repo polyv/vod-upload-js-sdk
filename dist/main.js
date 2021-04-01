@@ -167,7 +167,9 @@ function (_PubSub) {
       // 上传并发线程数
       retryCount: config.retryCount,
       // 网络原因失败时，重新上传次数
-      acceptedMimeType: config.acceptedMimeType // 用户自定义在一定范围内允许上传的文件类型
+      acceptedMimeType: config.acceptedMimeType,
+      // 用户自定义在一定范围内允许上传的文件类型
+      region: config.region || 'line1' // 上传线路, 默认line1, 华南
 
     };
     var parallelFileLimit = config.parallelFileLimit || 5; // 并行上传的文件数目；最大5个
@@ -1644,6 +1646,8 @@ function (_PubSub) {
     _this.parallel = config.threadCount;
     _this.partSize = config.partSize;
     _this.retryCount = typeof config.retryCount === 'number' ? config.retryCount : 3;
+    _this.userData.region = config.region || 'line1'; // 线路
+
     _this.statusCode = 1; // 文件的上传状态码：-1 已完成 0 上传中 1 未开始 2 暂停状态
 
     _this.percentage = 0;
@@ -17460,7 +17464,8 @@ function initUpload(userData, fileData) {
     autoid: 1,
     // 自动生成vid，无需在请求参数中传vid
     uploadType: 'js_sdk_chunk_v1',
-    compatible: 1
+    compatible: 1,
+    uploadLine: userData.region
   };
   var url = "//api.polyv.net/v2/uploadvideo/" + userData.userid + "/init";
   return _ajax.default.send(url, {
@@ -17481,7 +17486,8 @@ function getToken(userData) {
       appId: userData.appId,
       timestamp: userData.timestamp,
       sign: userData.sign,
-      isSts: 'Y'
+      isSts: 'Y',
+      uploadLine: userData.region
     };
     var _url2 = '//api.polyv.net/inner/v3/upload/video/create-upload-token';
     return _ajax.default.send(_url2, {
@@ -17494,7 +17500,8 @@ function getToken(userData) {
     ptime: userData.ptime,
     sign: userData.sign,
     hash: userData.hash,
-    compatible: 1
+    compatible: 1,
+    uploadLine: userData.region
   };
   var url = "//api.polyv.net/v2/uploadvideo/" + userData.userid + "/token";
   return _ajax.default.send(url, {
